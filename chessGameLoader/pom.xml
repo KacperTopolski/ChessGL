@@ -37,6 +37,7 @@
                         </goals>
                         <configuration>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <finalName>chessGameLoader</finalName>
                         </configuration>
                     </execution>
                 </executions>
@@ -59,7 +60,7 @@
         <dependency>
             <groupId>GameLoader</groupId>
             <artifactId>GameLoader</artifactId>
-            <version>1</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
