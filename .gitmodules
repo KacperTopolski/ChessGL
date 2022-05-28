@@ -1,6 +1,8 @@
 [submodule "GameLoader"]
 	path = GameLoader
 	url = https://github.com/janfornal/GameLoader
+	branch = main
 [submodule "chess"]
 	path = chess
 	url = https://github.com/mhorod/chess/
+	branch = main
