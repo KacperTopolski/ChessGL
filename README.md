@@ -9,7 +9,7 @@ This is a wrapper around [chess](https://github.com/mhorod/chess) project, allow
 
 ## Basic usage
 
-    git clone --recurse-submodules git@github.com:KacperTopolski/chessGameLoader.git    # Clone the project & submodules
-    mvn clean package                                                                   # Compile
+    git clone --recurse-submodules git@github.com:KacperTopolski/chessGameLoader.git
+    mvn clean package
 
 Now copy ``chessGameLoader/target/chessGameLoader.jar`` file to ``games`` in ``GameLoader`` directory.
