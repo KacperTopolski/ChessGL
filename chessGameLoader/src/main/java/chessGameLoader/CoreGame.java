@@ -1,5 +1,6 @@
 package chessGameLoader;
 
+import static GameLoader.common.Utility.runtimeAssert;
 import app.checkers.Checkers;
 import app.chess.Chess;
 import app.core.game.Game;
@@ -7,24 +8,25 @@ import app.core.game.moves.Move;
 import app.core.interactor.InteractiveGame;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class CoreGame {
     private final Game game;
+    private InteractiveGame igame;
 
     public CoreGame(Game gm) {
         game = gm;
     }
 
-    public Game get() {
-        return game;
+    public Game getGame() {
+        return igame == null ? game : igame;
     }
 
-    private InteractiveGame ig;
     public InteractiveGame getInteractive() {
-        if (ig == null)
-            ig = new InteractiveGame(game);
-        return ig;
+        if (igame == null)
+            igame = new InteractiveGame(game);
+        return igame;
     }
 
     public enum coreState {
@@ -66,17 +68,17 @@ public class CoreGame {
         return getCurrentPlayer() == 0 ? turn.WHITE : turn.BLACK;
     }
 
-    public boolean isMoveLegal(int id) {
-        return 0 <= id && id < game.getLegalMoves(getCurrentPlayer()).size();
+    public boolean isMoveLegal(MoveInfo info) {
+        Stream<Move> moves = game.getLegalMoves(getCurrentPlayer()).stream();
+        return moves.anyMatch(m -> info.equals(new MoveInfo(m)));
     }
 
-    public void makeMove(int id) {
-        int cp = getCurrentPlayer();
-        List<Move> lm = game.getLegalMoves(cp);
-        if (ig == null)
-            game.makeMove(cp, lm.get(id));
-        else
-            ig.makeMove(cp, lm.get(id));
+    public void makeMove(MoveInfo info) {
+        Stream<Move> moves = game.getLegalMoves(getCurrentPlayer()).stream();
+        List<Move> mvs = moves.filter(m -> info.equals(new MoveInfo(m))).toList();
+
+        runtimeAssert(mvs.size() == 1);
+        getGame().makeMove(getCurrentPlayer(), mvs.get(0));
     }
 
     public boolean isChess() {
@@ -92,7 +94,7 @@ public class CoreGame {
     public String toString() {
         return "CoreGame{" +
                 "game=" + game +
-                ", ig=" + ig +
+                ", ig=" + igame +
                 ", state=" + getState() +
                 ", turn=" + getTurn() +
                 ", isChess=" + isChess() +

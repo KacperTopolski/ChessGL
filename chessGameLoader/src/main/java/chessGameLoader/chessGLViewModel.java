@@ -2,12 +2,22 @@ package chessGameLoader;
 
 import GameLoader.client.Client;
 import GameLoader.client.PlayViewModel;
+import app.chess.moves.Promotion;
+import app.core.game.Field;
+import app.core.game.Piece;
 import app.core.game.moves.Move;
+import app.core.game.moves.PieceMove;
 import app.core.interactor.InteractiveGame;
 import static GameLoader.common.Messages.*;
+import static chessGameLoader.MoveInfo.getPiece;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class chessGLViewModel implements PlayViewModel {
@@ -21,29 +31,31 @@ public class chessGLViewModel implements PlayViewModel {
 
         InteractiveGame ig = game.getCore().getInteractive();
 
-        List<Move> lm = new ArrayList<>(ig.getLegalMoves(ourPlayer));
+        Map<Piece, Field> oldPos = new HashMap<>();
+
+        Runnable update = () -> {
+            oldPos.clear();
+            List<Move> lm = ig.getLegalMoves(ourPlayer);
+            for (Move mv : lm) {
+                Piece p = getPiece(mv);
+                oldPos.put(p, p.getPosition());
+            }
+        };
+        update.run();
 
         ig.connectSpectator((player, move, changedPieces) -> {
             if (player != ourPlayer) {
-                lm.clear();
-                lm.addAll(ig.getLegalMoves(ourPlayer));
+                update.run();
                 return;
             }
 
-            for (int i = 0; i < lm.size(); ++i) {
-                if (lm.get(i).toString().equals(move.toString())) {
-                    chessGLCommand cmd = new chessGLCommand(playingAs(), i);
-                    user.sendMessage(new MoveMessage(cmd));
+            Piece p = getPiece(move);
+            Field findPos = oldPos.get(p);
+            MoveInfo mv = findPos != null ? new MoveInfo(findPos, move) : new MoveInfo(move);
 
-                    return;
-                }
-            }
-
-            System.out.println(game);
-            System.out.println(move);
-            System.out.println(lm);
-
-            throw new RuntimeException();
+            user.sendMessage(new MoveMessage(new chessGLCommand(playingAs(), mv)));
+            update.run();
+            game.forceRecalculation();
         });
     }
 

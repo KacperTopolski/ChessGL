@@ -55,10 +55,16 @@ public class chessGL implements Game {
             return;
         }
         if (move instanceof chessGLCommand cmd) {
-            int id = cmd.getId();
-            core.makeMove(id);
+            core.makeMove(cmd.getInfo());
+            forceRecalculation();
+            return;
         }
-        currState = calcState();
+        throw new RuntimeException();
+    }
+
+    public void forceRecalculation() {
+        if (getState() == state.UNFINISHED)
+            currState = calcState();
     }
 
     @Override
@@ -67,8 +73,7 @@ public class chessGL implements Game {
             return getState() == state.UNFINISHED;
         if (move instanceof chessGLCommand cmd) {
             int pl = cmd.getPlayer();
-            int id = cmd.getId();
-            return getState() == state.UNFINISHED && pl == getTurn() && core.isMoveLegal(id);
+            return getState() == state.UNFINISHED && pl == getTurn() && core.isMoveLegal(cmd.getInfo());
         }
         return false;
     }

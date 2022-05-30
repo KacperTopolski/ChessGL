@@ -1,24 +1,29 @@
 package chessGameLoader;
 
+import app.chess.moves.ChessMove;
+import app.chess.moves.Promotion;
+import app.core.game.Field;
+import app.core.game.moves.Move;
+import app.core.game.moves.PieceMove;
+
 import static GameLoader.common.Serializables.Command;
 
 public class chessGLCommand extends Command {
-    int id;
+    private final MoveInfo info;
 
-    public chessGLCommand(int player, int idx) {
+    public chessGLCommand(int player, MoveInfo moveInfo) {
         super(player);
-        id = idx;
+        info = moveInfo;
     }
 
-    public int getId() {
-        return id;
+    public MoveInfo getInfo() {
+        return info;
     }
 
     @Override
     public String toString() {
         return "chessGLCommand{" +
-                "id=" + id +
-                ", player=" + getPlayer() +
+                "info=" + info +
                 '}';
     }
 }
