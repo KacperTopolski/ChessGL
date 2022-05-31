@@ -27,7 +27,7 @@ public record MoveInfo(int start_r, int start_f, int end_r, int end_f, int kind)
             return move.getField();
         if (mv instanceof Promotion move)
             return move.getField();
-        throw new RuntimeException();
+        return null;
     }
     public static Piece getPiece(Move<?> mv) {
         if (mv instanceof PieceMove<?> move)

@@ -2,22 +2,16 @@ package chessGameLoader;
 
 import GameLoader.client.Client;
 import GameLoader.client.PlayViewModel;
-import app.chess.moves.Promotion;
 import app.core.game.Field;
 import app.core.game.Piece;
 import app.core.game.moves.Move;
-import app.core.game.moves.PieceMove;
 import app.core.interactor.InteractiveGame;
 import static GameLoader.common.Messages.*;
 import static chessGameLoader.MoveInfo.getPiece;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class chessGLViewModel implements PlayViewModel {

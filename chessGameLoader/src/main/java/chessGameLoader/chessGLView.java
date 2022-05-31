@@ -3,6 +3,7 @@ package chessGameLoader;
 import GameLoader.client.PlayView;
 import app.core.interactor.InteractiveGame;
 import app.core.interactor.Player;
+import app.ui.Style;
 import app.ui.board.GraphicalBoard;
 import app.ui.board.boards.InvertedBoard;
 import app.ui.board.boards.NormalBoard;
@@ -14,6 +15,8 @@ import javafx.scene.layout.VBox;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class chessGLView extends VBox implements PlayView {
+    static final Style STYLE = new CutePink();
+
     public chessGLView(chessGLViewModel model) {
         chessGL game = model.getGame();
         CoreGame core = game.getCore();
@@ -28,8 +31,8 @@ public class chessGLView extends VBox implements PlayView {
         ig.connectPlayer(1 - ourPlayerId, new Player());
 
         GraphicalBoard playerBoard = ourPlayerId == 0 ?
-                new NormalBoard(40, new CutePink()) :
-                new InvertedBoard(40, new CutePink());
+                new NormalBoard(40, STYLE) :
+                new InvertedBoard(40, STYLE);
 
         if (core.isChess())
             ChessConnector.connect(playerBoard, ourPlayer);

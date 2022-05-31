@@ -1,11 +1,5 @@
 package chessGameLoader;
 
-import app.chess.moves.ChessMove;
-import app.chess.moves.Promotion;
-import app.core.game.Field;
-import app.core.game.moves.Move;
-import app.core.game.moves.PieceMove;
-
 import static GameLoader.common.Serializables.Command;
 
 public class chessGLCommand extends Command {
