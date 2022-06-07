@@ -6,12 +6,13 @@ import app.chess.board.StandardChessBoard;
 import GameLoader.common.Game;
 
 import static GameLoader.common.Serializables.*;
+import static GameLoader.common.Utility.runtimeAssert;
 
 import java.util.List;
 
 public class chessGL implements Game {
-    private final String CHESS = "Chess", CHECKERS = "Checkers";
-    private final List<String> settingsList = List.of(CHESS, CHECKERS);
+    private final static String CHESS = "Chess", CHECKERS = "Checkers";
+    private final static List<String> settingsList = List.of(CHESS, CHECKERS);
 
     @Override
     public String getName() {
@@ -24,7 +25,6 @@ public class chessGL implements Game {
     }
 
     private String settings;
-    private state currState = state.UNFINISHED;
     private CoreGame core;
     private boolean zeroPlayerIsBlack;
 
@@ -35,10 +35,6 @@ public class chessGL implements Game {
 
     @Override
     public state getState() {
-        return currState;
-    }
-
-    private state calcState() {
         CoreGame.coreState st = core.getState();
         return switch (st) {
             case UNFINISHED -> state.UNFINISHED;
@@ -51,30 +47,25 @@ public class chessGL implements Game {
     @Override
     public void makeMove(Command move) {
         if (move instanceof ResignationCommand res) {
-            currState = res.getPlayer() == 0 ? state.P1_WON : state.P0_WON;
+            core.forceState((res.getPlayer() == 0) ^ zeroPlayerIsBlack ?
+                    CoreGame.coreState.BLACK_WON : CoreGame.coreState.WHITE_WON);
             return;
         }
         if (move instanceof chessGLCommand cmd) {
             core.makeMove(cmd.getInfo());
-            forceRecalculation();
             return;
         }
         throw new RuntimeException();
     }
 
-    public void forceRecalculation() {
-        if (getState() == state.UNFINISHED)
-            currState = calcState();
-    }
-
     @Override
     public boolean isMoveLegal(Command move) {
+        if (getState() != state.UNFINISHED)
+            return false;
         if (move instanceof ResignationCommand)
-            return getState() == state.UNFINISHED;
-        if (move instanceof chessGLCommand cmd) {
-            int pl = cmd.getPlayer();
-            return getState() == state.UNFINISHED && pl == getTurn() && core.isMoveLegal(cmd.getInfo());
-        }
+            return true;
+        if (move instanceof chessGLCommand cmd)
+            return cmd.getPlayer() == getTurn() && core.isMoveLegal(cmd.getInfo());
         return false;
     }
 
@@ -83,7 +74,7 @@ public class chessGL implements Game {
     }
 
     @Override
-    public void start(String settings, int seed) { // TODO chess960
+    public void start(String settings, int seed) {
         if (!settingsList.contains(settings))
             throw new IllegalArgumentException("these settings are not permitted");
 
@@ -97,8 +88,8 @@ public class chessGL implements Game {
     public chessGLViewModel createViewModel(Client user, int id) {
         if (viewModel == null)
             viewModel = new chessGLViewModel(user, id, this);
-        if (viewModel.getModelUser() != user || viewModel.playingAs() != id)
-            throw new RuntimeException();
+
+        runtimeAssert(viewModel.getModelUser() == user && viewModel.playingAs() == id);
         return viewModel;
     }
 
@@ -106,17 +97,16 @@ public class chessGL implements Game {
         return core;
     }
 
+    public boolean getZeroPlayerIsBlack() {
+        return zeroPlayerIsBlack;
+    }
+
     @Override
     public String toString() {
         return "chessGL{" +
                 "settings='" + settings + '\'' +
-                ", currState=" + currState +
                 ", core=" + core +
                 ", zeroPlayerIsBlack=" + zeroPlayerIsBlack +
                 '}';
-    }
-
-    public boolean getZeroPlayerIsBlack() {
-        return zeroPlayerIsBlack;
     }
 }

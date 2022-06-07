@@ -1,44 +1,28 @@
 package chessGameLoader;
 
 import GameLoader.client.PlayView;
-import app.core.interactor.InteractiveGame;
-import app.core.interactor.Player;
-import app.ui.Style;
-import app.ui.board.GraphicalBoard;
-import app.ui.board.boards.InvertedBoard;
-import app.ui.board.boards.NormalBoard;
-import app.ui.checkers.CheckersConnector;
-import app.ui.chess.ChessConnector;
-import app.ui.styles.CutePink;
-import app.utils.pieceplayer.StandalonePiecePlayer;
+import app.ui.menu.DerpyButton;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class chessGLView extends VBox implements PlayView {
-    static final Style STYLE = new CutePink();
-
     public chessGLView(chessGLViewModel model) {
-        chessGL game = model.getGame();
-        CoreGame core = game.getCore();
-        InteractiveGame ig = core.getInteractive();
+        int ourPlayerId = model.playingAs() ^ (model.getGame().getZeroPlayerIsBlack() ? 1 : 0);
+        CoreGame core = model.getGame().getCore();
 
-        int ourPlayerId = model.playingAs() ^ (game.getZeroPlayerIsBlack() ? 1 : 0);
+        VBox board = core.getGUI(ourPlayerId);
+        Label l = new Label("White to play!");
+        l.setFont(DerpyButton.font);
+        l.setAlignment(Pos.CENTER);
 
-        // ourPlayer connects automatically to interactive game
-        StandalonePiecePlayer ourPlayer = new StandalonePiecePlayer(ig, ourPlayerId);
+        getChildren().addAll(l, board);
 
-        // connect second player
-        ig.connectPlayer(1 - ourPlayerId, new Player());
-
-        GraphicalBoard playerBoard = ourPlayerId == 0 ?
-                new NormalBoard(40, STYLE) :
-                new InvertedBoard(40, STYLE);
-
-        if (core.isChess())
-            ChessConnector.connect(playerBoard, ourPlayer);
-        if (core.isCheckers())
-            CheckersConnector.connect(playerBoard, ourPlayer);
-
-        getChildren().add(playerBoard);
+        core.connectSpectator((_a, _b, _c) -> l.setText(switch (core.getState()) {
+            case UNFINISHED -> (core.getCurrentPlayer() == 0 ? "White" : "Black") + " to play!";
+            case DRAW -> "Draw";
+            case WHITE_WON -> "White won";
+            case BLACK_WON -> "Black won";
+        }), true);
     }
 }
