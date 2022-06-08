@@ -1,6 +1,5 @@
 package chessGameLoader;
 
-import GameLoader.client.PlayView;
 import app.core.interactor.InteractiveGame;
 import app.core.interactor.Player;
 import app.ui.Style;
@@ -14,7 +13,7 @@ import app.utils.pieceplayer.StandalonePiecePlayer;
 import javafx.scene.layout.VBox;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class chessGLView extends VBox implements PlayView {
+public class chessGLView extends VBox {
     static final Style STYLE = new CutePink();
 
     public chessGLView(chessGLViewModel model) {

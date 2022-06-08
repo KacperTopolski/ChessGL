@@ -6,6 +6,8 @@ import app.core.game.Field;
 import app.core.game.Piece;
 import app.core.game.moves.Move;
 import app.core.interactor.InteractiveGame;
+import javafx.beans.Observable;
+
 import static GameLoader.common.Messages.*;
 import static chessGameLoader.MoveInfo.getPiece;
 
@@ -50,6 +52,7 @@ public class chessGLViewModel implements PlayViewModel {
             user.sendMessage(new MoveMessage(new chessGLCommand(playingAs(), mv)));
             update.run();
             game.forceRecalculation();
+            game.getCore().updateObs();
         });
     }
 
@@ -76,5 +79,10 @@ public class chessGLViewModel implements PlayViewModel {
     @Override
     public chessGLView createView() {
         return view;
+    }
+
+    @Override
+    public Observable getObservable() {
+        return modelGame.getCore().getObs();
     }
 }

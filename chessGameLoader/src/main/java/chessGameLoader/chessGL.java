@@ -52,11 +52,13 @@ public class chessGL implements Game {
     public void makeMove(Command move) {
         if (move instanceof ResignationCommand res) {
             currState = res.getPlayer() == 0 ? state.P1_WON : state.P0_WON;
+            core.updateObs();
             return;
         }
         if (move instanceof chessGLCommand cmd) {
             core.makeMove(cmd.getInfo());
             forceRecalculation();
+            core.updateObs();
             return;
         }
         throw new RuntimeException();
@@ -78,6 +80,7 @@ public class chessGL implements Game {
         return false;
     }
 
+    @Override
     public int getTurn() {
         return core.getCurrentPlayer() ^ (zeroPlayerIsBlack ? 1 : 0);
     }

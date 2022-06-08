@@ -6,6 +6,8 @@ import app.chess.Chess;
 import app.core.game.Game;
 import app.core.game.moves.Move;
 import app.core.interactor.InteractiveGame;
+import javafx.beans.Observable;
+import javafx.beans.property.SimpleIntegerProperty;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -31,11 +33,11 @@ public class CoreGame {
 
     public enum coreState {
         UNFINISHED, DRAW, WHITE_WON, BLACK_WON
-    };
+    }
 
     public enum turn {
         WHITE, BLACK
-    };
+    }
 
     public coreState getState() {
         if (game instanceof Chess ch) {
@@ -102,5 +104,16 @@ public class CoreGame {
                 '}';
     }
 
+    SimpleIntegerProperty s;
 
+    public void updateObs() {
+        if (s != null)
+            s.set(s.get() + 1);
+    }
+
+    public Observable getObs() {
+        if (s == null)
+            s = new SimpleIntegerProperty(0);
+        return s;
+    }
 }
